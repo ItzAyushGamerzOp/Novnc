@@ -1,11 +1,13 @@
 FROM ubuntu:22.04
 
-# Install packages
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install desktop + novnc
 RUN apt update && apt install -y \
     xfce4 xfce4-goodies tightvncserver novnc websockify python3-numpy wget curl && \
     apt clean
 
-# Set up VNC password
+# Set VNC password
 RUN mkdir -p /root/.vnc && \
     echo "1234" | vncpasswd -f > /root/.vnc/passwd && \
     chmod 600 /root/.vnc/passwd
