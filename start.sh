@@ -1,34 +1,32 @@
 #!/bin/bash
-echo "🚀 Starting noVNC + VNC + Chrome"
+echo "🚀 Starting noVNC + Chrome Desktop"
 
-# Kill any old display
+# Kill old sessions
 pkill Xvfb 2>/dev/null
 pkill x11vnc 2>/dev/null
 
-# Start virtual display
+# Start X virtual framebuffer
 Xvfb :1 -screen 0 1280x720x16 &
 export DISPLAY=:1
 
-# Start lightweight window manager
+# Start minimal window manager
 fluxbox &
 
-# Start VNC server
-x11vnc -display :1 -forever -shared -rfbport 5901 -passwd 1234 -nopw -bg
+# Start VNC server (reuses password)
+x11vnc -display :1 -forever -shared -rfbport 5901 -passwdfile /root/.vnc/passwd -bg
 
-# Get noVNC (only if not present)
+# Clone noVNC if not found
 if [ ! -d "/root/noVNC" ]; then
   git clone https://github.com/novnc/noVNC.git /root/noVNC --depth=1
   git clone https://github.com/novnc/websockify.git /root/noVNC/utils/websockify --depth=1
 fi
 
-# Enable auto-connect HTML
-cd /root/noVNC
+# Auto-connect HTML
 cat <<EOF > /root/noVNC/vnc_auto.html
 <!DOCTYPE html>
 <html>
   <head><title>noVNC AutoConnect</title>
     <meta charset="utf-8"/>
-    <script src="app/ui.js"></script>
   </head>
   <body>
     <script>
@@ -38,11 +36,11 @@ cat <<EOF > /root/noVNC/vnc_auto.html
 </html>
 EOF
 
-# Launch Chrome
-chromium-browser --no-sandbox --disable-gpu --disable-dev-shm-usage --start-maximized &
+# Launch Chromium
+chromium-browser --no-sandbox --disable-dev-shm-usage --disable-gpu --start-maximized &
 
 # Start noVNC
-echo "✅ noVNC is live on port 6080"
-echo "🌐 Open https://<your-app-name>.onrender.com/vnc_auto.html"
 cd /root/noVNC
+echo "✅ noVNC running on port 6080"
+echo "🌐 URL: https://<your-app>.onrender.com/vnc_auto.html"
 ./utils/novnc_proxy --vnc localhost:5901 --listen 6080
