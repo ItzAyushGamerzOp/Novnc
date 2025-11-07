@@ -1,12 +1,16 @@
 #!/bin/bash
-# Start VNC server
+echo "----- Starting VNC + noVNC server -----"
+
+# Start VNC
 vncserver :1 -geometry 1280x720 -depth 16
 
-# Start noVNC
-mkdir -p /root/noVNC
-cd /root/noVNC
-git clone https://github.com/novnc/noVNC.git .
-git clone https://github.com/novnc/websockify.git ./utils/websockify
+# Clone latest noVNC
+cd /root
+git clone https://github.com/novnc/noVNC.git
+git clone https://github.com/novnc/websockify.git noVNC/utils/websockify
 
-# Run the noVNC web server
+# Run noVNC server
+cd noVNC
+echo "✅ noVNC is running on port 6080"
+echo "🔑 Password: 1234"
 ./utils/novnc_proxy --vnc localhost:5901 --listen 6080
