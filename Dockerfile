@@ -4,16 +4,17 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY=:1
 ENV USER=root
 
-# Install only necessary packages
+# Install only what we need
 RUN apt update && apt install -y \
-    xvfb x11vnc fluxbox novnc websockify chromium-browser curl git wget \
+    xvfb x11vnc fluxbox novnc websockify tightvncserver chromium-browser git curl wget \
     && apt clean && rm -rf /var/lib/apt/lists/*
 
-# VNC password (auto login)
+# Set VNC password
 RUN mkdir -p /root/.vnc && \
-    echo "1234" | vncpasswd -f > /root/.vnc/passwd && chmod 600 /root/.vnc/passwd
+    echo "1234" | vncpasswd -f > /root/.vnc/passwd && \
+    chmod 600 /root/.vnc/passwd
 
-# Copy startup script
+# Copy and allow start script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
