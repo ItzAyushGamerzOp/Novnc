@@ -1,21 +1,12 @@
 #!/bin/bash
-echo "----- Starting VNC + noVNC server -----"
+# Start VNC server
+vncserver :1 -geometry 1280x720 -depth 16
 
-mkdir -p /root/.vnc
-echo "1234" | vncpasswd -f > /root/.vnc/passwd
-chmod 600 /root/.vnc/passwd
+# Start noVNC
+mkdir -p /root/noVNC
+cd /root/noVNC
+git clone https://github.com/novnc/noVNC.git .
+git clone https://github.com/novnc/websockify.git ./utils/websockify
 
-# Start desktop environment
-vncserver :1 -geometry 1280x800 -depth 24
-sleep 3
-
-# Start noVNC proxy
-/usr/share/novnc/utils/novnc_proxy --vnc localhost:5901 --listen 0.0.0.0:6080 &
-sleep 2
-
-echo "✅ noVNC is running on port 6080"
-echo "👉 Access: https://your-app-name.onrender.com"
-echo "🔑 Password: 1234"
-
-# Keep container alive
-tail -f /dev/null
+# Run the noVNC web server
+./utils/novnc_proxy --vnc localhost:5901 --listen 6080
