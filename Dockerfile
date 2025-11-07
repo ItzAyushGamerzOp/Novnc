@@ -1,21 +1,19 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV USER=root
 ENV DISPLAY=:1
+ENV USER=root
 
-# ✅ Install lightweight desktop & tools
+# Install only necessary packages
 RUN apt update && apt install -y \
-    xfce4 xfce4-goodies tightvncserver novnc websockify \
-    chromium-browser curl wget git xterm && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+    xvfb x11vnc fluxbox novnc websockify chromium-browser curl git wget \
+    && apt clean && rm -rf /var/lib/apt/lists/*
 
-# ✅ Set VNC password (1234)
+# VNC password (auto login)
 RUN mkdir -p /root/.vnc && \
-    echo "1234" | vncpasswd -f > /root/.vnc/passwd && \
-    chmod 600 /root/.vnc/passwd
+    echo "1234" | vncpasswd -f > /root/.vnc/passwd && chmod 600 /root/.vnc/passwd
 
-# ✅ Copy start script
+# Copy startup script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
